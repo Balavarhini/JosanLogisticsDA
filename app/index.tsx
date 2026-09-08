@@ -1,0 +1,51 @@
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { colors, spacing, typography } from "@constants/theme";
+
+/**
+ * Branded splash screen. The actual auth redirect happens in the root
+ * layout's RouteGuard (via the native splash screen staying up until session
+ * restore resolves), so this component is what briefly shows underneath —
+ * and what would show if JS took longer than the native splash to settle.
+ */
+export default function SplashScreenRoute() {
+  return (
+    <View style={styles.container}>
+      <View style={styles.markWrap}>
+        <MaterialCommunityIcons name="truck-fast" size={44} color={colors.white} />
+      </View>
+      <Text style={styles.title}>JOSAN LOGISTICS</Text>
+      <Text style={styles.tagline}>Moving Business Forward</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.navy,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+  },
+  markWrap: {
+    width: 88,
+    height: 88,
+    borderRadius: 24,
+    backgroundColor: colors.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.md,
+  },
+  title: {
+    fontSize: typography.h2.fontSize,
+    fontWeight: typography.h2.fontWeight,
+    color: colors.white,
+    letterSpacing: 1.5,
+  },
+  tagline: {
+    fontSize: typography.bodySmall.fontSize,
+    color: "rgba(255,255,255,0.7)",
+  },
+});

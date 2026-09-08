@@ -1,0 +1,76 @@
+{
+  "expo": {
+    "name": "Josan Logistics Driver",
+    "slug": "josan-logistics-driver",
+    "scheme": "josandriver",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#111827"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.josanlogistics.driver",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Josan Logistics needs your location to navigate to pickups and deliveries and to share live tracking with dispatch.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Josan Logistics needs background location to keep dispatch updated on your route while a delivery is in progress.",
+        "NSCameraUsageDescription": "Josan Logistics needs camera access to capture proof-of-delivery photos."
+      }
+    },
+    "android": {
+      "package": "com.josanlogistics.driver",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#F77F28"
+      },
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_ANDROID_GOOGLE_MAPS_API_KEY"
+        }
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Josan Logistics to use your location for navigation and live tracking."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Allow Josan Logistics to access your camera to capture proof of delivery."
+        }
+      ],
+      "expo-asset"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "26c1650b-39b9-49e7-b08b-9bffaaf9402f"
+      }
+    }
+  }
+}
