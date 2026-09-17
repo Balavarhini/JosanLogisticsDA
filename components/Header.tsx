@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, radius, spacing, typography } from "@constants/theme";
 
 interface HeaderProps {
@@ -14,14 +15,17 @@ interface HeaderProps {
 /** Standard screen header: optional back button, centered-left title, optional right action. */
 export function Header({ title, showBack = true, onBack, rightElement }: HeaderProps) {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleBack = () => {
     if (onBack) return onBack();
     if (router.canGoBack()) router.back();
   };
 
+  const paddingTop = Math.max(insets.top + spacing.xs, spacing.lg);
+
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { paddingTop }]}>
       {showBack ? (
         <Pressable
           onPress={handleBack}

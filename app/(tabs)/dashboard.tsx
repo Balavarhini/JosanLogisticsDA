@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, typography } from "@constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboard } from "@/hooks/useTrips";
@@ -19,6 +20,7 @@ import { initialsFromName } from "@utils/format";
  */
 export default function DashboardScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { driver } = useAuth();
   const { data, isLoading, error, refresh } = useDashboard();
   const [refreshing, setRefreshing] = useState(false);
@@ -40,7 +42,10 @@ export default function DashboardScreen() {
   return (
     <ScrollView
       style={styles.flex}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: Math.max(insets.top + spacing.sm, spacing.lg) },
+      ]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
     >
       <View style={styles.greetingRow}>

@@ -11,8 +11,7 @@ interface AsyncState<T> {
 export function useNotifications(category: NotificationCategory | "all" = "all") {
   const [state, setState] = useState<AsyncState<AppNotification[]>>({ data: null, isLoading: true, error: null });
 
-  const load = useCallback(async () => {
-    setState((s) => ({ ...s, isLoading: true, error: null }));
+  const fetchNotifications = useCallback(async () => {
     try {
       const data = await notificationsService.getNotifications(category);
       setState({ data, isLoading: false, error: null });
@@ -25,9 +24,31 @@ export function useNotifications(category: NotificationCategory | "all" = "all")
     }
   }, [category]);
 
+  const refresh = useCallback(() => {
+    setState((s) => ({ ...s, isLoading: true, error: null }));
+    fetchNotifications();
+  }, [fetchNotifications]);
+
   useEffect(() => {
-    load();
-  }, [load]);
+    let active = true;
+    notificationsService.getNotifications(category).then(
+      (data) => {
+        if (active) setState({ data, isLoading: false, error: null });
+      },
+      (e) => {
+        if (active) {
+          setState({
+            data: null,
+            isLoading: false,
+            error: e instanceof Error ? e.message : "Failed to load notifications.",
+          });
+        }
+      }
+    );
+    return () => {
+      active = false;
+    };
+  }, [category]);
 
   const markRead = useCallback(async (id: string) => {
     setState((s) => (s.data ? { ...s, data: s.data.map((n) => (n.id === id ? { ...n, read: true } : n)) } : s));
@@ -39,5 +60,5 @@ export function useNotifications(category: NotificationCategory | "all" = "all")
     }
   }, []);
 
-  return { ...state, refresh: load, markRead };
+  return { ...state, refresh, markRead };
 }

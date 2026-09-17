@@ -14,5 +14,14 @@ export async function getNotifications(category: NotificationCategory | "all" = 
 }
 
 export async function markNotificationRead(id: string): Promise<void> {
-  await api.patch(`/notifications/${id}`, { read: true });
+  try {
+    await api.patch(`/notifications/${id}`, { read: true });
+  } catch (error) {
+    if (__DEV__) {
+      const target = MOCK_NOTIFICATIONS.find((n) => n.id === id);
+      if (target) target.read = true;
+      return;
+    }
+    throw error;
+  }
 }

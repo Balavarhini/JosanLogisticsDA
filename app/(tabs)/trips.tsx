@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, radius, spacing, typography } from "@constants/theme";
 import { useTripList } from "@/hooks/useTrips";
 import { TripCard } from "@/components/TripCard";
@@ -16,6 +17,7 @@ const FILTERS: { key: TripListFilter; label: string }[] = [
 
 /** My Trips — filterable list of the driver's trips. */
 export default function TripsScreen() {
+  const insets = useSafeAreaInsets();
   const [filter, setFilter] = useState<TripListFilter>("today");
   const { data, isLoading, error, refresh } = useTripList(filter);
   const [refreshing, setRefreshing] = useState(false);
@@ -28,7 +30,7 @@ export default function TripsScreen() {
 
   return (
     <View style={styles.flex}>
-      <Text style={styles.title}>My Trips</Text>
+      <Text style={[styles.title, { paddingTop: Math.max(insets.top + spacing.sm, spacing.lg) }]}>My Trips</Text>
 
       <View style={styles.tabs}>
         {FILTERS.map((f) => {

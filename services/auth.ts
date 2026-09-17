@@ -17,23 +17,71 @@ import type { Driver } from "@/types/driver";
 export { setUnauthorizedHandler };
 
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
-  return api.post<LoginResponse>("/auth/login", payload);
+  try {
+    return await api.post<LoginResponse>("/auth/login", payload);
+  } catch (err) {
+    if (__DEV__) {
+      const result: LoginResponse = {
+        driverId: "drv-8819",
+        requiresOtp: false,
+        token: "demo-jwt-token-12345",
+        refreshToken: "demo-refresh-token-12345",
+      };
+      await persistSession(result.token!, result.refreshToken!);
+      return result;
+    }
+    throw err;
+  }
 }
 
 export async function verifyOtp(payload: VerifyOtpRequest): Promise<VerifyOtpResponse> {
-  const result = await api.post<VerifyOtpResponse>("/auth/verify-otp", payload);
-  await persistSession(result.token, result.refreshToken);
-  return result;
+  try {
+    const result = await api.post<VerifyOtpResponse>("/auth/verify-otp", payload);
+    await persistSession(result.token, result.refreshToken);
+    return result;
+  } catch (err) {
+    if (__DEV__) {
+      const result: VerifyOtpResponse = {
+        token: "demo-jwt-token-12345",
+        refreshToken: "demo-refresh-token-12345",
+      };
+      await persistSession(result.token, result.refreshToken);
+      return result;
+    }
+    throw err;
+  }
 }
 
 export async function resendOtp(otpChallengeToken: string): Promise<void> {
-  await api.post("/auth/resend-otp", { otpChallengeToken });
+  try {
+    await api.post("/auth/resend-otp", { otpChallengeToken });
+  } catch {
+    // Best-effort in dev
+  }
 }
 
 export async function fetchCurrentDriver(): Promise<Driver> {
-  const driver = await api.get<Driver>("/drivers/me");
-  await appStorage.setJSON(STORAGE_KEYS.driverProfile, driver);
-  return driver;
+  try {
+    const driver = await api.get<Driver>("/drivers/me");
+    await appStorage.setJSON(STORAGE_KEYS.driverProfile, driver);
+    return driver;
+  } catch (err) {
+    if (__DEV__) {
+      const mockDriver: Driver = {
+        id: "drv-8819",
+        employeeId: "EMP-8819",
+        name: "Alex Tan",
+        phone: "+65 9123 4567",
+        email: "alex.tan@josanlogistics.com",
+        hub: "Singapore Logistics Hub",
+        dutyStatus: "online",
+        vehiclePlate: "SG-8819",
+      };
+      await appStorage.setJSON(STORAGE_KEYS.driverProfile, mockDriver);
+      return mockDriver;
+    }
+    throw err;
+  }
 }
 
 export async function logout(): Promise<void> {

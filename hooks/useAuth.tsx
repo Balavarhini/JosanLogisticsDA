@@ -5,6 +5,7 @@
  */
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import * as authService from "@services/auth";
+import * as driverService from "@services/driver";
 import type { Driver } from "@/types/driver";
 import type { LoginRequest, VerifyOtpRequest } from "@/types/api";
 
@@ -18,6 +19,7 @@ interface AuthContextValue {
   verifyOtp: (code: string) => Promise<void>;
   resendOtp: () => Promise<void>;
   logout: () => Promise<void>;
+  updateDutyStatus: (status: "online" | "offline" | "on_break") => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -83,6 +85,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setPendingOtpToken(null);
   }, []);
 
+  const updateDutyStatus = useCallback(async (newStatus: "online" | "offline" | "on_break") => {
+    try {
+      await driverService.setDutyStatus(newStatus as any);
+      setDriver((prev) => (prev ? { ...prev, dutyStatus: newStatus as any } : null));
+    } catch (err: any) {
+      console.warn("Failed to update status:", err.message);
+      setDriver((prev) => (prev ? { ...prev, dutyStatus: newStatus as any } : null));
+    }
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       driver,
@@ -93,8 +105,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       verifyOtp,
       resendOtp,
       logout,
+      updateDutyStatus,
     }),
-    [driver, token, isBootstrapping, pendingOtpToken, login, verifyOtp, resendOtp, logout]
+    [driver, token, isBootstrapping, pendingOtpToken, login, verifyOtp, resendOtp, logout, updateDutyStatus]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

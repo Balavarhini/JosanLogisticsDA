@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -29,24 +29,21 @@ function RouteGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isBootstrapping } = useAuth();
   const segments = useSegments();
   const router = useRouter();
-  const [splashHidden, setSplashHidden] = useState(false);
 
   useEffect(() => {
     if (isBootstrapping) return;
 
     const inAuthGroup = segments[0] === "(auth)";
+    const inTabsGroup = segments[0] === "(tabs)";
+
     if (!isAuthenticated && !inAuthGroup) {
       router.replace("/(auth)/login");
-    } else if (isAuthenticated && inAuthGroup) {
+    } else if (isAuthenticated && !inTabsGroup) {
       router.replace("/(tabs)/dashboard");
     }
 
-    if (!splashHidden) {
-      setSplashHidden(true);
-      SplashScreen.hideAsync().catch(() => {});
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, isBootstrapping]);
+    SplashScreen.hideAsync().catch(() => {});
+  }, [isAuthenticated, isBootstrapping, router, segments]);
 
   return <>{children}</>;
 }

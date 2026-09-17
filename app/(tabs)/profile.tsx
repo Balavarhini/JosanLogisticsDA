@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, spacing, typography } from "@constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useDriverPerformance } from "@/hooks/useDriverProfile";
@@ -9,7 +10,12 @@ import { Card } from "@/components/Card";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { initialsFromName } from "@utils/format";
 
+import { SosModal } from "@/components/SosModal";
+
 const MENU_ITEMS: { key: string; label: string; icon: keyof typeof Ionicons.glyphMap; route: string }[] = [
+  { key: "earnings", label: "My Earnings & Payouts", icon: "wallet-outline", route: "/earnings" },
+  { key: "vehicle", label: "Assigned Vehicle", icon: "car-outline", route: "/vehicle" },
+  { key: "schedule", label: "Shift Schedule", icon: "calendar-outline", route: "/schedule" },
   { key: "documents", label: "Documents", icon: "document-text-outline", route: "/documents" },
   { key: "settings", label: "Settings", icon: "settings-outline", route: "/settings" },
   { key: "help", label: "Help & Support", icon: "help-circle-outline", route: "/help" },
@@ -18,12 +24,20 @@ const MENU_ITEMS: { key: string; label: string; icon: keyof typeof Ionicons.glyp
 /** Driver Profile — identity, performance summary, and account actions. */
 export default function ProfileScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { driver, logout } = useAuth();
   const { data: performance } = useDriverPerformance();
   const [confirmingLogout, setConfirmingLogout] = useState(false);
+  const [showSosModal, setShowSosModal] = useState(false);
 
   return (
-    <ScrollView style={styles.flex} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.flex}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: Math.max(insets.top + spacing.sm, spacing.lg) },
+      ]}
+    >
       <View style={styles.header}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{initialsFromName(driver?.name ?? "Driver")}</Text>
@@ -71,6 +85,16 @@ export default function ProfileScreen() {
       </Card>
 
       <Pressable
+        style={styles.sosRow}
+        accessibilityRole="button"
+        accessibilityLabel="Emergency SOS"
+        onPress={() => setShowSosModal(true)}
+      >
+        <Ionicons name="alert-circle" size={20} color={colors.error} />
+        <Text style={styles.sosLabel}>🚨 Emergency SOS Alert</Text>
+      </Pressable>
+
+      <Pressable
         style={styles.logoutRow}
         accessibilityRole="button"
         accessibilityLabel="Log out"
@@ -79,6 +103,8 @@ export default function ProfileScreen() {
         <Ionicons name="log-out-outline" size={20} color={colors.error} />
         <Text style={styles.logoutLabel}>Log Out</Text>
       </Pressable>
+
+      <SosModal visible={showSosModal} onClose={() => setShowSosModal(false)} />
 
       <ConfirmationModal
         visible={confirmingLogout}
@@ -176,4 +202,17 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   logoutLabel: { fontSize: typography.bodySmall.fontSize, fontWeight: "700", color: colors.error },
+  sosRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.sm,
+    paddingVertical: spacing.md,
+    backgroundColor: "#FEE2E2",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#FCA5A5",
+    marginTop: spacing.xs,
+  },
+  sosLabel: { fontSize: typography.bodySmall.fontSize, fontWeight: "800", color: colors.error },
 });

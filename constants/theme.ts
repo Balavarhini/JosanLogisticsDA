@@ -30,6 +30,7 @@ export const colors = {
   warningSoft: "rgba(245, 158, 11, 0.12)",
   error: "#DC2626",
   errorSoft: "rgba(220, 38, 38, 0.12)",
+  danger: "#DC2626",
   info: "#2563EB",
   infoSoft: "rgba(37, 99, 235, 0.12)",
   primarySoft: "rgba(247, 127, 40, 0.12)",
@@ -39,6 +40,9 @@ export const colors = {
   black: "#000000",
   transparent: "transparent",
 } as const;
+
+export const Colors = colors;
+export const danger = colors.error;
 
 export const typography = {
   fontFamily: {

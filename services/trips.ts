@@ -63,34 +63,74 @@ export async function getTripById(id: string): Promise<Trip> {
 }
 
 export async function acceptTrip(id: string): Promise<Trip> {
-  return api.post<Trip>(`/trips/${id}/accept`);
+  return withDevFallback(
+    () => api.post<Trip>(`/trips/${id}/accept`),
+    () => {
+      const trip = MOCK_TRIPS.find((t) => t.id === id) ?? MOCK_TRIPS[0];
+      return { ...trip, status: "accepted" as TripStatus };
+    }
+  );
+}
+
+export async function rejectTrip(id: string, reason: string, notes?: string): Promise<void> {
+  return withDevFallback(
+    () => api.post(`/trips/${id}/reject`, { reason, notes }),
+    () => {
+      const trip = MOCK_TRIPS.find((t) => t.id === id);
+      if (trip) trip.status = "assigned" as TripStatus;
+    }
+  );
 }
 
 export async function advanceTripStatus(id: string, nextStatus: TripStatus): Promise<Trip> {
-  return api.patch<Trip>(`/trips/${id}/status`, { status: nextStatus });
+  return withDevFallback(
+    () => api.patch<Trip>(`/trips/${id}/status`, { status: nextStatus }),
+    () => {
+      const trip = MOCK_TRIPS.find((t) => t.id === id) ?? MOCK_TRIPS[0];
+      trip.status = nextStatus;
+      return { ...trip, status: nextStatus };
+    }
+  );
 }
 
 export async function submitProofOfDelivery(id: string, pod: ProofOfDelivery): Promise<Trip> {
-  const formData = new FormData();
-  if (pod.photoUri) {
-    formData.append("photo", { uri: pod.photoUri, name: "pod-photo.jpg", type: "image/jpeg" } as unknown as Blob);
-  }
-  if (pod.signatureUri) {
-    formData.append("signature", { uri: pod.signatureUri, name: "signature.png", type: "image/png" } as unknown as Blob);
-  }
-  formData.append("otpVerified", String(pod.otpVerified));
-  if (pod.remarks) formData.append("remarks", pod.remarks);
-  if (pod.deliveredLocation) formData.append("location", JSON.stringify(pod.deliveredLocation));
+  return withDevFallback(
+    async () => {
+      const formData = new FormData();
+      if (pod.photoUri) {
+        formData.append("photo", { uri: pod.photoUri, name: "pod-photo.jpg", type: "image/jpeg" } as unknown as Blob);
+      }
+      if (pod.signatureUri) {
+        formData.append("signature", { uri: pod.signatureUri, name: "signature.png", type: "image/png" } as unknown as Blob);
+      }
+      formData.append("otpVerified", String(pod.otpVerified));
+      if (pod.remarks) formData.append("remarks", pod.remarks);
+      if (pod.deliveredLocation) formData.append("location", JSON.stringify(pod.deliveredLocation));
 
-  return api.upload<Trip>(`/trips/${id}/proof-of-delivery`, formData);
+      return api.upload<Trip>(`/trips/${id}/proof-of-delivery`, formData);
+    },
+    () => {
+      const trip = MOCK_TRIPS.find((t) => t.id === id) ?? MOCK_TRIPS[0];
+      trip.status = "delivery_completed" as TripStatus;
+      return { ...trip, status: "delivery_completed" as TripStatus };
+    }
+  );
 }
 
 export async function reportFailedDelivery(report: FailedDeliveryReport): Promise<void> {
-  const formData = new FormData();
-  formData.append("reason", report.reason);
-  if (report.notes) formData.append("notes", report.notes);
-  if (report.photoUri) {
-    formData.append("photo", { uri: report.photoUri, name: "evidence.jpg", type: "image/jpeg" } as unknown as Blob);
-  }
-  await api.upload(`/trips/${report.tripId}/failed-delivery`, formData);
+  return withDevFallback(
+    async () => {
+      const formData = new FormData();
+      formData.append("reason", report.reason);
+      if (report.notes) formData.append("notes", report.notes);
+      if (report.photoUri) {
+        formData.append("photo", { uri: report.photoUri, name: "evidence.jpg", type: "image/jpeg" } as unknown as Blob);
+      }
+      await api.upload(`/trips/${report.tripId}/failed-delivery`, formData);
+    },
+    () => {
+      const trip = MOCK_TRIPS.find((t) => t.id === report.tripId) ?? MOCK_TRIPS[0];
+      trip.status = "failed" as TripStatus;
+    }
+  );
 }

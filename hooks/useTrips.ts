@@ -12,8 +12,7 @@ interface AsyncState<T> {
 export function useDashboard() {
   const [state, setState] = useState<AsyncState<DashboardSummary>>({ data: null, isLoading: true, error: null });
 
-  const load = useCallback(async () => {
-    setState((s) => ({ ...s, isLoading: true, error: null }));
+  const fetchDashboard = useCallback(async () => {
     try {
       const data = await tripsService.getDashboardSummary();
       setState({ data, isLoading: false, error: null });
@@ -22,18 +21,33 @@ export function useDashboard() {
     }
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  const refresh = useCallback(() => {
+    setState((s) => ({ ...s, isLoading: true, error: null }));
+    fetchDashboard();
+  }, [fetchDashboard]);
 
-  return { ...state, refresh: load };
+  useEffect(() => {
+    let active = true;
+    tripsService.getDashboardSummary().then(
+      (data) => {
+        if (active) setState({ data, isLoading: false, error: null });
+      },
+      (e) => {
+        if (active) setState({ data: null, isLoading: false, error: e instanceof Error ? e.message : "Failed to load dashboard." });
+      }
+    );
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return { ...state, refresh };
 }
 
 export function useTripList(filter: TripListFilter) {
   const [state, setState] = useState<AsyncState<Trip[]>>({ data: null, isLoading: true, error: null });
 
-  const load = useCallback(async () => {
-    setState((s) => ({ ...s, isLoading: true, error: null }));
+  const fetchTrips = useCallback(async () => {
     try {
       const data = await tripsService.getTrips(filter);
       setState({ data, isLoading: false, error: null });
@@ -42,19 +56,34 @@ export function useTripList(filter: TripListFilter) {
     }
   }, [filter]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  const refresh = useCallback(() => {
+    setState((s) => ({ ...s, isLoading: true, error: null }));
+    fetchTrips();
+  }, [fetchTrips]);
 
-  return { ...state, refresh: load };
+  useEffect(() => {
+    let active = true;
+    tripsService.getTrips(filter).then(
+      (data) => {
+        if (active) setState({ data, isLoading: false, error: null });
+      },
+      (e) => {
+        if (active) setState({ data: null, isLoading: false, error: e instanceof Error ? e.message : "Failed to load trips." });
+      }
+    );
+    return () => {
+      active = false;
+    };
+  }, [filter]);
+
+  return { ...state, refresh };
 }
 
 export function useTrip(id: string | undefined) {
   const [state, setState] = useState<AsyncState<Trip>>({ data: null, isLoading: true, error: null });
 
-  const load = useCallback(async () => {
+  const fetchTrip = useCallback(async () => {
     if (!id) return;
-    setState((s) => ({ ...s, isLoading: true, error: null }));
     try {
       const data = await tripsService.getTripById(id);
       setState({ data, isLoading: false, error: null });
@@ -63,9 +92,27 @@ export function useTrip(id: string | undefined) {
     }
   }, [id]);
 
+  const refresh = useCallback(() => {
+    if (!id) return;
+    setState((s) => ({ ...s, isLoading: true, error: null }));
+    fetchTrip();
+  }, [id, fetchTrip]);
+
   useEffect(() => {
-    load();
-  }, [load]);
+    if (!id) return;
+    let active = true;
+    tripsService.getTripById(id).then(
+      (data) => {
+        if (active) setState({ data, isLoading: false, error: null });
+      },
+      (e) => {
+        if (active) setState({ data: null, isLoading: false, error: e instanceof Error ? e.message : "Failed to load trip." });
+      }
+    );
+    return () => {
+      active = false;
+    };
+  }, [id]);
 
   const advanceStatus = useCallback(
     async (nextStatus: TripStatus) => {
@@ -94,5 +141,5 @@ export function useTrip(id: string | undefined) {
     [id]
   );
 
-  return { ...state, refresh: load, advanceStatus, accept, submitPod };
+  return { ...state, refresh, advanceStatus, accept, submitPod };
 }

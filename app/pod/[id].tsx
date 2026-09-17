@@ -38,7 +38,7 @@ export default function ProofOfDeliveryScreen() {
 
   const now = new Date();
   const otpValid = otp.length === 6;
-  const canSubmit = hasSignature && otpValid && !submitting;
+  const canSubmit = (hasSignature || otpValid || photoUri !== null) && !submitting;
 
   const pickPhoto = async (fromCamera: boolean) => {
     const permission = fromCamera
@@ -59,12 +59,8 @@ export default function ProofOfDeliveryScreen() {
 
   const onSubmit = async () => {
     setSubmitError(null);
-    if (!hasSignature) {
-      setSubmitError("Please capture the recipient's signature.");
-      return;
-    }
-    if (!otpValid) {
-      setSubmitError("Enter the 6-digit delivery confirmation code.");
+    if (!hasSignature && !otpValid && !photoUri) {
+      setSubmitError("Please capture a signature, delivery photo, or 6-digit confirmation code.");
       return;
     }
 

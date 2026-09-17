@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { colors, spacing, typography } from "@constants/theme";
 import { useTrip } from "@/hooks/useTrips";
 import { TripStatus } from "@/types/trip";
@@ -24,8 +25,24 @@ export default function PickupDetailsScreen() {
   const router = useRouter();
   const { data: trip, isLoading, error, refresh, advanceStatus } = useTrip(id);
   const [checked, setChecked] = useState<Record<number, boolean>>({});
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const takePhoto = async () => {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted) {
+      alert("Camera permission is required to capture proof of pickup.");
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.7,
+    });
+    if (!result.canceled && result.assets?.[0]?.uri) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  };
 
   if (isLoading && !trip) return <LoadingState message="Loading pickup details…" />;
   if (error && !trip) return <ErrorState message={error} onRetry={refresh} />;
@@ -80,6 +97,23 @@ export default function PickupDetailsScreen() {
               </Pressable>
             );
           })}
+
+          <View style={{ marginTop: spacing.xs }}>
+            <Text style={[styles.sectionTitle, { fontSize: 14, marginBottom: 6 }]}>Cargo Photo Evidence</Text>
+            {photoUri ? (
+              <View style={styles.photoPreviewRow}>
+                <Text style={styles.photoSuccessText}>✓ Photo Captured</Text>
+                <Pressable onPress={takePhoto}>
+                  <Text style={styles.retakeText}>Retake</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Pressable style={styles.photoButton} onPress={takePhoto}>
+                <Ionicons name="camera-outline" size={20} color={colors.primary} />
+                <Text style={styles.photoButtonText}>Take Cargo Photo</Text>
+              </Pressable>
+            )}
+          </View>
         </Card>
 
         {submitError ? <Text style={styles.error}>{submitError}</Text> : null}
@@ -116,4 +150,41 @@ const styles = StyleSheet.create({
   checkboxChecked: { backgroundColor: colors.primary, borderColor: colors.primary },
   checklistText: { flex: 1, fontSize: typography.bodySmall.fontSize, color: colors.textPrimary },
   error: { color: colors.error, fontSize: typography.bodySmall.fontSize, textAlign: "center" },
+  photoButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    borderWidth: 1.5,
+    borderStyle: "dashed",
+    borderColor: colors.primary,
+    borderRadius: 10,
+    paddingVertical: 12,
+    backgroundColor: "#FFF7ED",
+  },
+  photoButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.primary,
+  },
+  photoPreviewRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#ECFDF5",
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#10B981",
+  },
+  photoSuccessText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#065F46",
+  },
+  retakeText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.primary,
+  },
 });

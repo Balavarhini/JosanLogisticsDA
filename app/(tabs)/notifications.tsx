@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, radius, spacing, typography } from "@constants/theme";
 import { useNotifications } from "@/hooks/useNotifications";
 import { LoadingState } from "@/components/LoadingState";
@@ -21,6 +22,7 @@ function timeAgo(iso: string): string {
 /** Notifications — trip updates and system alerts. */
 export default function NotificationsScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { data, isLoading, error, refresh, markRead } = useNotifications();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -42,7 +44,7 @@ export default function NotificationsScreen() {
 
   return (
     <View style={styles.flex}>
-      <Text style={styles.title}>Notifications</Text>
+      <Text style={[styles.title, { paddingTop: Math.max(insets.top + spacing.sm, spacing.lg) }]}>Notifications</Text>
       <FlatList<AppNotification>
         data={data ?? []}
         keyExtractor={(item) => item.id}

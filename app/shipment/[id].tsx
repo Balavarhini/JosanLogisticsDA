@@ -9,6 +9,7 @@ import { Header } from "@/components/Header";
 import { Card } from "@/components/Card";
 import { StatusBadge } from "@/components/StatusBadge";
 import { LocationCard } from "@/components/LocationCard";
+import { RouteMapCard } from "@/components/RouteMapCard";
 import { TripProgressTracker } from "@/components/TripProgressTracker";
 import { PrimaryButton } from "@/components/PrimaryButton";
 import { SecondaryButton } from "@/components/SecondaryButton";
@@ -47,6 +48,8 @@ export default function ActiveShipmentScreen() {
           <MetaTile label="Distance" value={formatDistanceKm(trip.distanceKm)} />
           <MetaTile label="Weight" value={formatWeightKg(trip.shipment.weightKg)} />
         </View>
+
+        <RouteMapCard pickup={trip.pickup} delivery={trip.delivery} />
 
         <LocationCard address={trip.pickup} variant="pickup" />
         <LocationCard address={trip.delivery} variant="delivery" />

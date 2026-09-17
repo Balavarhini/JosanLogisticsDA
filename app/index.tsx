@@ -1,15 +1,26 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { colors, spacing, typography } from "@constants/theme";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
- * Branded splash screen. The actual auth redirect happens in the root
- * layout's RouteGuard (via the native splash screen staying up until session
- * restore resolves), so this component is what briefly shows underneath —
- * and what would show if JS took longer than the native splash to settle.
+ * Branded splash screen component with fallback navigation redirect.
  */
 export default function SplashScreenRoute() {
+  const { isAuthenticated, isBootstrapping } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isBootstrapping) return;
+    if (isAuthenticated) {
+      router.replace("/(tabs)/dashboard");
+    } else {
+      router.replace("/(auth)/login");
+    }
+  }, [isAuthenticated, isBootstrapping, router]);
+
   return (
     <View style={styles.container}>
       <View style={styles.markWrap}>
