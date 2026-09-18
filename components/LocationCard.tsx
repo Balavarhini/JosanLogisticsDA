@@ -13,7 +13,7 @@ interface LocationCardProps {
 
 /** Displays a pickup/delivery address, with an optional call-contact row. */
 export function LocationCard({ address, variant = "pickup", showContact = true }: LocationCardProps) {
-  const dotColor = variant === "pickup" ? colors.primary : colors.navy;
+  const dotColor = variant === "pickup" ? colors.primary : colors.gold;
 
   const call = () => {
     if (address.contactPhone) Linking.openURL(`tel:${address.contactPhone}`);
@@ -101,12 +101,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.navy,
+    backgroundColor: colors.goldSoft,
+    borderWidth: 1,
+    borderColor: colors.gold,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
-    color: colors.white,
+    color: colors.primaryDark,
     fontWeight: "700",
   },
   contactName: {
@@ -118,7 +120,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: radius.button,
-    backgroundColor: colors.navy,
+    backgroundColor: colors.primarySoft,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
   },

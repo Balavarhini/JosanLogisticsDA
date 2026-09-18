@@ -6,35 +6,42 @@
  */
 
 export const colors = {
-  // Brand
-  primary: "#F77F28",
-  primaryDark: "#C85F16",
-  navy: "#111827",
+  // Brand — Gold + Dust Orange Palette
+  primary: "#C96A32",       // Dust Orange
+  primaryDark: "#A94F22",   // Deep Dust Orange
+  gold: "#D4AF5A",          // Premium Gold
+  goldLight: "#E8D39A",     // Light Gold
+  darkCharcoal: "#1F1F1F",  // Dark Charcoal
+  navy: "#1F1F1F",          // Alias for Dark Charcoal to maintain backwards compatibility
 
   // Text
-  textPrimary: "#111827",
-  textSecondary: "#6B7280",
+  textPrimary: "#1F1F1F",   // Dark Charcoal
+  textSecondary: "#6B7280", // Muted Charcoal
   textMuted: "#9CA3AF",
   textOnDark: "#FFFFFF",
 
   // Surfaces
-  background: "#F7F8FA",
-  card: "#FFFFFF",
-  border: "#E5E7EB",
-  overlay: "rgba(17, 24, 39, 0.5)",
+  background: "#FAF8F3",    // Warm Off-White
+  warmOffWhite: "#FAF8F3",  // Warm Off-White surface
+  softBeige: "#F2EDE3",     // Soft Beige surface
+  card: "#FFFFFF",          // Pure White
+  border: "#E8D39A",        // Light Gold border
+  borderGold: "#D4AF5A",    // Premium Gold border
+  overlay: "rgba(31, 31, 31, 0.5)",
 
   // Status
   success: "#16A34A",
   successSoft: "rgba(22, 163, 74, 0.12)",
-  warning: "#F59E0B",
-  warningSoft: "rgba(245, 158, 11, 0.12)",
+  warning: "#D4AF5A",       // Premium Gold
+  warningSoft: "rgba(212, 175, 90, 0.15)",
   error: "#DC2626",
   errorSoft: "rgba(220, 38, 38, 0.12)",
   danger: "#DC2626",
-  info: "#2563EB",
-  infoSoft: "rgba(37, 99, 235, 0.12)",
-  primarySoft: "rgba(247, 127, 40, 0.12)",
-  neutralSoft: "rgba(107, 114, 128, 0.12)",
+  info: "#C96A32",          // Dust Orange Accent
+  infoSoft: "rgba(201, 106, 50, 0.12)",
+  primarySoft: "rgba(201, 106, 50, 0.12)",
+  goldSoft: "rgba(212, 175, 90, 0.15)",
+  neutralSoft: "#F2EDE3",   // Soft Beige
 
   white: "#FFFFFF",
   black: "#000000",
@@ -81,14 +88,14 @@ export const radius = {
 
 export const shadow = {
   card: {
-    shadowColor: "#111827",
+    shadowColor: "#1F1F1F",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 2,
   },
   floating: {
-    shadowColor: "#F77F28",
+    shadowColor: "#C96A32",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,

@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary,
     borderRadius: 10,
     paddingVertical: 12,
-    backgroundColor: "#FFF7ED",
+    backgroundColor: colors.primarySoft,
   },
   photoButtonText: {
     fontSize: 14,

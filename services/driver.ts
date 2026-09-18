@@ -1,6 +1,8 @@
 import { api } from "./api";
 import { MOCK_PERFORMANCE, MOCK_DOCUMENTS } from "./mockData";
-import type { DutyStatus, DriverPerformance, DriverDocument } from "@/types/driver";
+import { appStorage } from "./storage";
+import { STORAGE_KEYS } from "@constants/config";
+import type { DutyStatus, DriverPerformance, DriverDocument, Driver } from "@/types/driver";
 
 export async function setDutyStatus(status: DutyStatus | 'online' | 'offline' | 'on_break'): Promise<any> {
   try {
@@ -70,5 +72,30 @@ export async function getDocuments(): Promise<DriverDocument[]> {
     return await api.get<DriverDocument[]>("/drivers/me/documents");
   } catch (error) {
     return MOCK_DOCUMENTS;
+  }
+}
+
+export async function updateProfile(partialDriver: Partial<Driver>): Promise<Driver> {
+  try {
+    const res = await api.patch<Driver>("/drivers/me", partialDriver);
+    await appStorage.setJSON(STORAGE_KEYS.driverProfile, res);
+    return res;
+  } catch (error) {
+    if (__DEV__) {
+      const current = (await appStorage.getJSON<Driver>(STORAGE_KEYS.driverProfile)) || {
+        id: "drv-8819",
+        employeeId: "EMP-8819",
+        name: "Alex Tan",
+        phone: "+65 9123 4567",
+        email: "alex.tan@josanlogistics.com",
+        hub: "Singapore Logistics Hub",
+        dutyStatus: "online",
+        vehiclePlate: "SG-8819",
+      };
+      const merged: Driver = { ...current, ...partialDriver };
+      await appStorage.setJSON(STORAGE_KEYS.driverProfile, merged);
+      return merged;
+    }
+    throw error;
   }
 }

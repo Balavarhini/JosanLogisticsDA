@@ -38,7 +38,7 @@ export default function ScheduleScreen() {
             <View key={item.id || idx} style={styles.itemCard}>
               <Text style={styles.refText}>{item.reference || `TRIP-${idx + 1}`}</Text>
               <Text style={styles.timeText}>
-                Scheduled: {new Date(item.scheduled_start || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                Scheduled: {item.scheduled_start ? new Date(item.scheduled_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "09:00 AM"}
               </Text>
               <Text style={styles.addrText}>📍 Pickup: {item.pickup_label || "Changi Logistics Hub"}</Text>
               <Text style={styles.addrText}>🏁 Delivery: {item.delivery_label || "Singapore Destination"}</Text>
@@ -55,7 +55,7 @@ export default function ScheduleScreen() {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: "#F9FAFB" },
+  flex: { flex: 1, backgroundColor: Colors.background },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   content: { padding: 20, gap: 16 },
   todayCard: {
@@ -63,19 +63,19 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 20,
   },
-  todayTitle: { color: "#FFFFFF", fontSize: 16, fontWeight: "700" },
-  todaySub: { color: "#FFEAD5", fontSize: 13, marginTop: 4 },
-  sectionTitle: { fontSize: 18, fontWeight: "700", color: "#111827", marginTop: 8 },
+  todayTitle: { color: Colors.white, fontSize: 16, fontWeight: "700" },
+  todaySub: { color: Colors.goldLight, fontSize: 13, marginTop: 4 },
+  sectionTitle: { fontSize: 18, fontWeight: "700", color: Colors.darkCharcoal, marginTop: 8 },
   itemCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.card,
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Colors.border,
   },
-  refText: { fontSize: 16, fontWeight: "700", color: "#111827", marginBottom: 4 },
+  refText: { fontSize: 16, fontWeight: "700", color: Colors.darkCharcoal, marginBottom: 4 },
   timeText: { fontSize: 13, color: Colors.primary, fontWeight: "600", marginBottom: 8 },
-  addrText: { fontSize: 14, color: "#374151", marginBottom: 4 },
-  emptyCard: { backgroundColor: "#FFF", padding: 20, borderRadius: 12, alignItems: "center" },
-  emptyText: { color: "#6B7280", fontSize: 14 },
+  addrText: { fontSize: 14, color: Colors.textPrimary, marginBottom: 4 },
+  emptyCard: { backgroundColor: Colors.card, padding: 20, borderRadius: 12, borderWidth: 1, borderColor: Colors.border, alignItems: "center" },
+  emptyText: { color: Colors.textSecondary, fontSize: 14 },
 });

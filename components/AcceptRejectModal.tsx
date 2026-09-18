@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Modal, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
-import { Colors } from "@/constants/theme";
+import { colors, Colors } from "@/constants/theme";
 
 interface AcceptRejectModalProps {
   visible: boolean;
@@ -127,15 +127,17 @@ export const AcceptRejectModal: React.FC<AcceptRejectModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: colors.overlay,
     justifyContent: "center",
     padding: 20,
   },
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.card,
     borderRadius: 16,
     padding: 20,
-    shadowColor: "#000",
+    borderWidth: 1,
+    borderColor: colors.border,
+    shadowColor: colors.darkCharcoal,
     shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 5,
@@ -143,17 +145,17 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#111827",
+    color: colors.darkCharcoal,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: "#6B7280",
+    color: colors.textSecondary,
     marginBottom: 16,
   },
   bodyText: {
     fontSize: 15,
-    color: "#374151",
+    color: colors.textPrimary,
     lineHeight: 22,
     marginBottom: 20,
   },
@@ -163,7 +165,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   radioOption: {
@@ -171,27 +173,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
     marginBottom: 6,
   },
   radioOptionSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: "#FFF7ED",
+    borderColor: colors.primary,
+    backgroundColor: colors.primarySoft,
   },
   radioText: {
     fontSize: 14,
-    color: "#4B5563",
+    color: colors.textSecondary,
   },
   radioTextSelected: {
-    color: Colors.primary,
+    color: colors.primary,
     fontWeight: "600",
   },
   textInput: {
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: colors.border,
+    backgroundColor: colors.warmOffWhite,
     borderRadius: 8,
     padding: 10,
     fontSize: 14,
+    color: colors.textPrimary,
     textAlignVertical: "top",
     height: 70,
   },
@@ -205,22 +209,22 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 18,
     borderRadius: 10,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: colors.softBeige,
   },
   cancelBtnText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#4B5563",
+    color: colors.textSecondary,
   },
   confirmBtn: {
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
   confirmBtnText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: colors.white,
   },
 });

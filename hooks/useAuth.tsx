@@ -20,6 +20,7 @@ interface AuthContextValue {
   resendOtp: () => Promise<void>;
   logout: () => Promise<void>;
   updateDutyStatus: (status: "online" | "offline" | "on_break") => Promise<void>;
+  updateProfile: (updates: Partial<Driver>) => Promise<Driver>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -95,6 +96,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const updateProfile = useCallback(async (updates: Partial<Driver>) => {
+    const updated = await driverService.updateProfile(updates);
+    setDriver(updated);
+    return updated;
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       driver,
@@ -106,8 +113,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       resendOtp,
       logout,
       updateDutyStatus,
+      updateProfile,
     }),
-    [driver, token, isBootstrapping, pendingOtpToken, login, verifyOtp, resendOtp, logout, updateDutyStatus]
+    [driver, token, isBootstrapping, pendingOtpToken, login, verifyOtp, resendOtp, logout, updateDutyStatus, updateProfile]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

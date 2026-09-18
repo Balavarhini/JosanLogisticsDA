@@ -22,12 +22,31 @@ export default function EarningsScreen() {
   };
 
   useEffect(() => {
-    loadData();
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await getEarnings();
+        if (mounted) setEarnings(data);
+      } catch (err) {
+        console.warn("Error fetching earnings:", err);
+      } finally {
+        if (mounted) {
+          setLoading(false);
+          setRefreshing(false);
+        }
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
-    loadData();
+    getEarnings()
+      .then((data) => setEarnings(data))
+      .catch((err) => console.warn("Error fetching earnings:", err))
+      .finally(() => setRefreshing(false));
   };
 
   if (loading && !earnings) {
@@ -69,7 +88,7 @@ export default function EarningsScreen() {
               <View style={{ flex: 1 }}>
                 <Text style={styles.historyDesc}>{item.description || "Trip Fare Payout"}</Text>
                 <Text style={styles.historyDate}>
-                  {new Date(item.earned_at || Date.now()).toLocaleDateString()}
+                  {item.earned_at ? new Date(item.earned_at).toLocaleDateString() : ""}
                 </Text>
               </View>
               <Text style={styles.historyAmount}>+S${parseFloat(item.amount || 45).toFixed(2)}</Text>
@@ -86,7 +105,7 @@ export default function EarningsScreen() {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: "#F9FAFB" },
+  flex: { flex: 1, backgroundColor: Colors.background },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   content: { padding: 20, paddingBottom: 40 },
   mainCard: {
@@ -95,40 +114,40 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: "center",
     marginBottom: 16,
-    shadowColor: "#000",
+    shadowColor: Colors.darkCharcoal,
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
-  mainLabel: { color: "#FFEAD5", fontSize: 14, fontWeight: "600" },
-  mainAmount: { color: "#FFFFFF", fontSize: 36, fontWeight: "800", marginVertical: 6 },
-  mainSubtitle: { color: "#FFFFFF", fontSize: 12, opacity: 0.9 },
+  mainLabel: { color: Colors.goldLight, fontSize: 14, fontWeight: "600" },
+  mainAmount: { color: Colors.white, fontSize: 36, fontWeight: "800", marginVertical: 6 },
+  mainSubtitle: { color: Colors.white, fontSize: 12, opacity: 0.9 },
   statsRow: { flexDirection: "row", gap: 12, marginBottom: 24 },
   statBox: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.softBeige,
     borderRadius: 14,
     padding: 16,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Colors.border,
   },
-  statLabel: { fontSize: 13, color: "#6B7280", marginBottom: 4 },
-  statValue: { fontSize: 20, fontWeight: "700", color: "#111827" },
-  sectionTitle: { fontSize: 18, fontWeight: "700", color: "#111827", marginBottom: 12 },
+  statLabel: { fontSize: 13, color: Colors.textSecondary, marginBottom: 4 },
+  statValue: { fontSize: 20, fontWeight: "700", color: Colors.darkCharcoal },
+  sectionTitle: { fontSize: 18, fontWeight: "700", color: Colors.darkCharcoal, marginBottom: 12 },
   historyRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.card,
     borderRadius: 12,
     padding: 16,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Colors.border,
   },
-  historyDesc: { fontSize: 14, fontWeight: "600", color: "#111827" },
-  historyDate: { fontSize: 12, color: "#6B7280", marginTop: 2 },
-  historyAmount: { fontSize: 16, fontWeight: "700", color: "#10B981" },
-  emptyCard: { backgroundColor: "#FFF", padding: 20, borderRadius: 12, alignItems: "center" },
-  emptyText: { color: "#6B7280", fontSize: 14 },
+  historyDesc: { fontSize: 14, fontWeight: "600", color: Colors.darkCharcoal },
+  historyDate: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  historyAmount: { fontSize: 16, fontWeight: "700", color: Colors.success },
+  emptyCard: { backgroundColor: Colors.card, padding: 20, borderRadius: 12, borderWidth: 1, borderColor: Colors.border, alignItems: "center" },
+  emptyText: { color: Colors.textSecondary, fontSize: 14 },
 });

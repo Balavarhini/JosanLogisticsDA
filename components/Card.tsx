@@ -20,6 +20,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderRadius: radius.card,
     padding: spacing.md,
+    borderWidth: 1,
+    borderColor: "rgba(232, 211, 154, 0.4)",
   },
   flat: {
     borderWidth: 1,

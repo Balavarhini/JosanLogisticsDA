@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.button,
     borderWidth: 1.5,
     borderColor: colors.border,
-    backgroundColor: colors.card,
+    backgroundColor: colors.warmOffWhite,
     paddingHorizontal: spacing.md,
     fontSize: typography.bodySmall.fontSize,
     color: colors.textPrimary,

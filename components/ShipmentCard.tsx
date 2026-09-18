@@ -33,7 +33,7 @@ export function ShipmentCard({ trip, onViewDetails, onNavigate }: ShipmentCardPr
         </View>
         <View style={styles.routeLine} />
         <View style={styles.routeRow}>
-          <View style={[styles.dot, { backgroundColor: colors.navy }]} />
+          <View style={[styles.dot, { backgroundColor: colors.gold }]} />
           <Text style={styles.routeText} numberOfLines={1}>
             {trip.delivery.line1}
           </Text>

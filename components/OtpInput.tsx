@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.button,
     borderWidth: 1.5,
     borderColor: colors.border,
-    backgroundColor: colors.card,
+    backgroundColor: colors.warmOffWhite,
     textAlign: "center",
     fontSize: 20,
     fontWeight: "700",
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   },
   boxFilled: {
     borderColor: colors.primary,
+    backgroundColor: colors.card,
   },
 });
 

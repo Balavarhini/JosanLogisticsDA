@@ -18,7 +18,7 @@ export const SosModal: React.FC<SosModalProps> = ({ visible, onClose }) => {
       await api.post("/driver/sos", { timestamp: new Date().toISOString() }).catch(() => {});
       alert("🚨 SOS EMERGENCY ALERT SENT! Dispatch team and emergency contacts have been notified.");
       onClose();
-    } catch (err: any) {
+    } catch {
       alert("SOS alert broadcast to dispatch!");
       onClose();
     } finally {
@@ -56,36 +56,38 @@ export const SosModal: React.FC<SosModalProps> = ({ visible, onClose }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.75)",
+    backgroundColor: Colors.overlay,
     justifyContent: "center",
     padding: 20,
   },
   card: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.card,
     borderRadius: 16,
     padding: 24,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   iconWrap: {
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: "#FEE2E2",
+    backgroundColor: Colors.errorSoft,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 16,
   },
   title: { fontSize: 20, fontWeight: "800", color: Colors.danger, marginBottom: 8 },
-  message: { fontSize: 14, color: "#4B5563", textAlign: "center", lineHeight: 20, marginBottom: 24 },
+  message: { fontSize: 14, color: Colors.textSecondary, textAlign: "center", lineHeight: 20, marginBottom: 24 },
   buttonRow: { flexDirection: "row", gap: 12, width: "100%" },
   cancelBtn: {
     flex: 1,
     paddingVertical: 14,
     borderRadius: 10,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: Colors.softBeige,
     alignItems: "center",
   },
-  cancelBtnText: { fontSize: 14, fontWeight: "600", color: "#4B5563" },
+  cancelBtnText: { fontSize: 14, fontWeight: "600", color: Colors.textSecondary },
   confirmBtn: {
     flex: 1,
     paddingVertical: 14,
@@ -93,5 +95,5 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.danger,
     alignItems: "center",
   },
-  confirmBtnText: { fontSize: 14, fontWeight: "800", color: "#FFFFFF" },
+  confirmBtnText: { fontSize: 14, fontWeight: "800", color: Colors.white },
 });

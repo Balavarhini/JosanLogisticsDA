@@ -128,14 +128,16 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.goldSoft,
+    borderWidth: 1,
+    borderColor: colors.gold,
     alignItems: "center",
     justifyContent: "center",
   },
   avatarText: {
     fontSize: typography.bodyMedium.fontSize,
     fontWeight: "700",
-    color: colors.primary,
+    color: colors.primaryDark,
   },
   statsGrid: {
     flexDirection: "row",
@@ -145,15 +147,17 @@ const styles = StyleSheet.create({
   statTile: {
     flexBasis: "47%",
     flexGrow: 1,
-    backgroundColor: colors.card,
+    backgroundColor: colors.softBeige,
     borderRadius: 16,
     padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
     gap: 4,
   },
   statValue: {
     fontSize: typography.metric.fontSize,
     fontWeight: typography.metric.fontWeight,
-    color: colors.textPrimary,
+    color: colors.darkCharcoal,
   },
   statLabel: {
     fontSize: typography.caption.fontSize,

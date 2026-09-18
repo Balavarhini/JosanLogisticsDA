@@ -12,7 +12,7 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#111827"
+      "backgroundColor": "#1F1F1F"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -30,7 +30,7 @@
       "package": "com.josanlogistics.driver",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#F77F28"
+        "backgroundColor": "#C96A32"
       },
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",

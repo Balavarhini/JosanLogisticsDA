@@ -63,19 +63,21 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: "#F9FAFB" },
+  flex: { flex: 1, backgroundColor: Colors.background },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   content: { padding: 20, gap: 16 },
   headerCard: {
-    backgroundColor: "#111827",
+    backgroundColor: Colors.darkCharcoal,
     borderRadius: 16,
     padding: 24,
     alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: Colors.gold,
   },
-  plateText: { color: "#F77F28", fontSize: 26, fontWeight: "800", letterSpacing: 1 },
-  modelText: { color: "#9CA3AF", fontSize: 14, marginTop: 4 },
+  plateText: { color: Colors.gold, fontSize: 26, fontWeight: "800", letterSpacing: 1 },
+  modelText: { color: Colors.textMuted, fontSize: 14, marginTop: 4 },
   statusBadge: {
-    backgroundColor: "rgba(16, 185, 129, 0.2)",
+    backgroundColor: "rgba(22, 163, 74, 0.2)",
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
@@ -83,20 +85,20 @@ const styles = StyleSheet.create({
   },
   statusText: { color: "#34D399", fontSize: 12, fontWeight: "700" },
   sectionCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: Colors.card,
     borderRadius: 14,
     padding: 18,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: Colors.border,
   },
-  sectionTitle: { fontSize: 16, fontWeight: "700", color: "#111827", marginBottom: 14 },
+  sectionTitle: { fontSize: 16, fontWeight: "700", color: Colors.darkCharcoal, marginBottom: 14 },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: Colors.softBeige,
   },
-  label: { fontSize: 14, color: "#6B7280" },
-  value: { fontSize: 14, fontWeight: "600", color: "#111827" },
+  label: { fontSize: 14, color: Colors.textSecondary },
+  value: { fontSize: 14, fontWeight: "600", color: Colors.darkCharcoal },
 });

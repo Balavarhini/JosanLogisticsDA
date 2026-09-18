@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: radius.button,
-    backgroundColor: colors.card,
+    backgroundColor: colors.softBeige,
     borderWidth: 1,
     borderColor: colors.border,
     alignItems: "center",

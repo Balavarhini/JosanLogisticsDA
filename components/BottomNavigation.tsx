@@ -49,11 +49,12 @@ export function BottomNavigation({ state, navigation }: BottomNavigationProps) {
             accessibilityRole="tab"
             accessibilityState={{ selected: isFocused }}
             accessibilityLabel={label}
-            style={styles.item}
+            style={[styles.item, isFocused && styles.activeItem]}
             hitSlop={8}
           >
+            {isFocused ? <View style={styles.activeIndicator} /> : null}
             <Ionicons name={iconName} size={22} color={color} />
-            <Text style={[styles.label, { color }]}>{label}</Text>
+            <Text style={[styles.label, { color: isFocused ? colors.darkCharcoal : colors.textMuted, fontWeight: isFocused ? "700" : "500" }]}>{label}</Text>
           </Pressable>
         );
       })}
@@ -76,6 +77,16 @@ const styles = StyleSheet.create({
     gap: 4,
     minWidth: 56,
     paddingVertical: 4,
+    position: "relative",
+  },
+  activeItem: {},
+  activeIndicator: {
+    position: "absolute",
+    top: -8,
+    width: 24,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: colors.primary,
   },
   label: {
     fontSize: typography.caption.fontSize,

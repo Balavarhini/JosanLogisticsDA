@@ -63,7 +63,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   pressed: {
-    opacity: 0.85,
+    backgroundColor: colors.primaryDark,
+    opacity: 0.95,
   },
   label: {
     fontSize: typography.button.fontSize,
