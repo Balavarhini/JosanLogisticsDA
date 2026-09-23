@@ -59,7 +59,7 @@ export async function connectSocket(options?: ConnectOptions): Promise<Socket> {
   });
 
   socket.on("connect_error", (err) => {
-    if (__DEV__) console.warn("[socket] connect error:", err.message);
+    if (__DEV__) console.log("[socket] connect error:", err.message);
   });
 
   socket.on("disconnect", (reason) => {

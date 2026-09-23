@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "@/components/MapViewWrapper";
 import { colors, spacing, typography } from "@constants/theme";
 import { useTrip } from "@/hooks/useTrips";
-import { useLiveTracking } from "@/hooks/useLocation";
+import { useLiveTracking, useRouteEstimate } from "@/hooks/useLocation";
 import { TripStatus } from "@/types/trip";
 import { distanceBetweenKm } from "@utils/format";
 import { Header } from "@/components/Header";
@@ -13,6 +13,8 @@ import { PrimaryButton } from "@/components/PrimaryButton";
 import { SecondaryButton } from "@/components/SecondaryButton";
 import { LoadingState } from "@/components/LoadingState";
 import { ErrorState } from "@/components/ErrorState";
+import { NavigationAppModal } from "@/components/NavigationAppModal";
+import type { NavDestination } from "@utils/navigation";
 
 const AVG_SPEED_KPH = 35;
 
@@ -24,6 +26,7 @@ export default function LiveTrackingScreen() {
   const { location, isTracking, error: trackingError, start, stop } = useLiveTracking(id);
   const [arriving, setArriving] = useState(false);
   const [arriveError, setArriveError] = useState<string | null>(null);
+  const [showNavModal, setShowNavModal] = useState(false);
 
   useEffect(() => {
     start();
@@ -38,14 +41,32 @@ export default function LiveTrackingScreen() {
       ? "delivery"
       : null;
 
-  const destination = leg === "pickup" ? trip?.pickup.coordinates : leg === "delivery" ? trip?.delivery.coordinates : null;
+  const targetAddress = leg === "pickup" ? trip?.pickup : leg === "delivery" ? trip?.delivery : null;
+  const destination = targetAddress?.coordinates;
+
+  const navDestination: NavDestination | null = useMemo(() => {
+    if (!destination) return null;
+    return {
+      latitude: destination.latitude,
+      longitude: destination.longitude,
+      label: targetAddress?.label,
+      postalCode: targetAddress?.postalCode,
+    };
+  }, [destination, targetAddress]);
+
+  const { route } = useRouteEstimate(location, destination);
 
   const remainingKm = useMemo(() => {
+    if (route?.distanceKm != null) return route.distanceKm;
     if (!location || !destination) return null;
     return distanceBetweenKm(location, destination);
-  }, [location, destination]);
+  }, [route, location, destination]);
 
-  const etaMinutes = remainingKm != null ? Math.max(1, Math.round((remainingKm / AVG_SPEED_KPH) * 60)) : null;
+  const etaMinutes = useMemo(() => {
+    if (route?.durationMinutes != null) return route.durationMinutes;
+    if (remainingKm != null) return Math.max(1, Math.round((remainingKm / AVG_SPEED_KPH) * 60));
+    return null;
+  }, [route, remainingKm]);
 
   if (isLoading && !trip) return <LoadingState message="Loading trip…" />;
   if (error && !trip) return <ErrorState message={error} onRetry={refresh} />;
@@ -66,6 +87,13 @@ export default function LiveTrackingScreen() {
     }
   };
 
+  const polylineCoords =
+    route?.polyline && route.polyline.length > 0
+      ? route.polyline
+      : location && destination
+      ? [location, destination]
+      : [];
+
   return (
     <View style={styles.flex}>
       <Header title="Live Tracking" />
@@ -84,7 +112,9 @@ export default function LiveTrackingScreen() {
           >
             <Marker coordinate={location} title="You" pinColor={colors.primary} />
             {destination ? <Marker coordinate={destination} title={leg === "pickup" ? "Pickup" : "Delivery"} /> : null}
-            {destination ? <Polyline coordinates={[location, destination]} strokeColor={colors.primary} strokeWidth={3} /> : null}
+            {polylineCoords.length > 0 ? (
+              <Polyline coordinates={polylineCoords} strokeColor={colors.primary} strokeWidth={4} />
+            ) : null}
           </MapView>
         ) : (
           <View style={styles.mapPlaceholder}>
@@ -110,19 +140,35 @@ export default function LiveTrackingScreen() {
         {arriveError ? <Text style={styles.error}>{arriveError}</Text> : null}
 
         <View style={styles.actions}>
-          {isTracking ? (
-            <SecondaryButton label="Pause Tracking" onPress={stop} />
-          ) : (
-            <SecondaryButton label="Resume Tracking" onPress={start} />
-          )}
-          <PrimaryButton
-            label={leg === "pickup" ? "I've Arrived at Pickup" : "I've Arrived at Delivery"}
-            onPress={onArrive}
-            disabled={!leg}
-            loading={arriving}
-          />
+          {navDestination ? (
+            <PrimaryButton
+              label="Start Navigation 🧭"
+              onPress={() => setShowNavModal(true)}
+              style={styles.navButton}
+            />
+          ) : null}
+          <View style={styles.secondaryRow}>
+            {isTracking ? (
+              <SecondaryButton label="Pause GPS" onPress={stop} style={styles.flex1} />
+            ) : (
+              <SecondaryButton label="Resume GPS" onPress={start} style={styles.flex1} />
+            )}
+            <PrimaryButton
+              label={leg === "pickup" ? "Arrived Pickup" : "Arrived Delivery"}
+              onPress={onArrive}
+              disabled={!leg}
+              loading={arriving}
+              style={styles.flex1}
+            />
+          </View>
         </View>
       </View>
+
+      <NavigationAppModal
+        visible={showNavModal}
+        destination={navDestination}
+        onClose={() => setShowNavModal(false)}
+      />
     </View>
   );
 }
@@ -149,5 +195,8 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: typography.caption.fontSize, color: colors.textSecondary },
   speedText: { fontSize: typography.caption.fontSize, color: colors.textSecondary, textAlign: "center" },
   actions: { gap: spacing.sm + 2 },
+  navButton: { backgroundColor: colors.primaryDark },
+  secondaryRow: { flexDirection: "row", gap: spacing.sm },
+  flex1: { flex: 1 },
   error: { color: colors.error, fontSize: typography.bodySmall.fontSize, textAlign: "center" },
 });

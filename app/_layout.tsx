@@ -34,11 +34,10 @@ function RouteGuard({ children }: { children: React.ReactNode }) {
     if (isBootstrapping) return;
 
     const inAuthGroup = segments[0] === "(auth)";
-    const inTabsGroup = segments[0] === "(tabs)";
 
     if (!isAuthenticated && !inAuthGroup) {
       router.replace("/(auth)/login");
-    } else if (isAuthenticated && !inTabsGroup) {
+    } else if (isAuthenticated && inAuthGroup) {
       router.replace("/(tabs)/dashboard");
     }
 
@@ -61,7 +60,7 @@ function AppShell() {
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
-        {/* trip/shipment/pickup/delivery/tracking/pod/documents/settings/help all
+        {/* trip/shipment/pickup/delivery/tracking/pod/earnings/vehicle/schedule/documents/settings/help/exception all
             render their own in-screen <Header> so titles can be dynamic (trip
             reference, etc.) — no native header needed for any of them. */}
         <Stack.Screen name="trip/[id]" />
@@ -71,9 +70,13 @@ function AppShell() {
         <Stack.Screen name="tracking/[id]" />
         <Stack.Screen name="pod/[id]" />
         <Stack.Screen name="delivery-confirmation/[id]" options={{ presentation: "fullScreenModal" }} />
+        <Stack.Screen name="earnings" />
+        <Stack.Screen name="vehicle" />
+        <Stack.Screen name="schedule" />
         <Stack.Screen name="documents" />
         <Stack.Screen name="settings" />
         <Stack.Screen name="help" />
+        <Stack.Screen name="exception/[id]" />
       </Stack>
     </RouteGuard>
   );

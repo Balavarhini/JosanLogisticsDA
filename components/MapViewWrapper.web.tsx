@@ -12,6 +12,10 @@ export function Polyline(_props: { coordinates?: any[]; strokeColor?: string; st
   return null;
 }
 
+export function UrlTile(_props: any) {
+  return null;
+}
+
 export default function MapView({ style }: { style?: any; children?: React.ReactNode; [key: string]: any }) {
   return (
     <View style={[styles.webMapContainer, style]}>

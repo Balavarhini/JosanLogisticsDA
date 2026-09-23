@@ -11,7 +11,7 @@ export default function ScheduleScreen() {
   useEffect(() => {
     getSchedule()
       .then((data) => setSchedule(data))
-      .catch((e) => console.warn(e))
+      .catch((e) => console.log(e))
       .finally(() => setLoading(false));
   }, []);
 

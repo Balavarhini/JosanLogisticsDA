@@ -3,11 +3,13 @@ import { StyleSheet, View } from "react-native";
 import MapViewWrapper, { Marker, Polyline, PROVIDER_GOOGLE } from "@/components/MapViewWrapper";
 import { colors, spacing } from "@constants/theme";
 import type { Address } from "@/types/trip";
+import { useRouteEstimate } from "@/hooks/useLocation";
 
 interface RouteMapCardProps {
   pickup: Address;
   delivery: Address;
   height?: number;
+  useOneMapTiles?: boolean;
 }
 
 /** Default Singapore Center if coordinates are missing */
@@ -18,12 +20,17 @@ const DEFAULT_SG_CENTER = {
   longitudeDelta: 0.15,
 };
 
-export function RouteMapCard({ pickup, delivery, height = 180 }: RouteMapCardProps) {
+export function RouteMapCard({ pickup, delivery, height = 180, useOneMapTiles = false }: RouteMapCardProps) {
+  const pCoord = pickup?.coordinates;
+  const dCoord = delivery?.coordinates;
+
+  const { route } = useRouteEstimate(pCoord, dCoord);
+
   const region = useMemo(() => {
-    const pLat = pickup?.coordinates?.latitude;
-    const pLng = pickup?.coordinates?.longitude;
-    const dLat = delivery?.coordinates?.latitude;
-    const dLng = delivery?.coordinates?.longitude;
+    const pLat = pCoord?.latitude;
+    const pLng = pCoord?.longitude;
+    const dLat = dCoord?.latitude;
+    const dLng = dCoord?.longitude;
 
     if (!pLat || !pLng || !dLat || !dLng) {
       return DEFAULT_SG_CENTER;
@@ -43,10 +50,13 @@ export function RouteMapCard({ pickup, delivery, height = 180 }: RouteMapCardPro
       latitudeDelta: latDelta,
       longitudeDelta: lngDelta,
     };
-  }, [pickup, delivery]);
+  }, [pCoord, dCoord]);
 
-  const pCoord = pickup?.coordinates;
-  const dCoord = delivery?.coordinates;
+  const polylineCoords = route?.polyline && route.polyline.length > 0
+    ? route.polyline
+    : pCoord && dCoord
+    ? [pCoord, dCoord]
+    : [];
 
   return (
     <View style={[styles.container, { height }]}>
@@ -57,11 +67,12 @@ export function RouteMapCard({ pickup, delivery, height = 180 }: RouteMapCardPro
         region={region}
         scrollEnabled={false}
         zoomEnabled={false}
+        useOneMapTiles={useOneMapTiles}
       >
         {pCoord ? <Marker coordinate={pCoord} title={`Pickup: ${pickup.label}`} pinColor="#10B981" /> : null}
         {dCoord ? <Marker coordinate={dCoord} title={`Delivery: ${delivery.label}`} pinColor={colors.primary} /> : null}
-        {pCoord && dCoord ? (
-          <Polyline coordinates={[pCoord, dCoord]} strokeColor={colors.primary} strokeWidth={3} />
+        {polylineCoords.length > 0 ? (
+          <Polyline coordinates={polylineCoords} strokeColor={colors.primary} strokeWidth={4} />
         ) : null}
       </MapViewWrapper>
     </View>

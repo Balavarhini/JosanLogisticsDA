@@ -46,10 +46,27 @@ export async function searchOneMapAddress(
     return response;
   } catch (error) {
     if (__DEV__) {
-      console.warn("[onemap] search unavailable, returning empty:", (error as Error).message);
+      console.log("[onemap] search unavailable, returning empty:", (error as Error).message);
     }
     return empty;
   }
+}
+
+/**
+ * Creates a debounced version of searchOneMapAddress to observe OneMap's
+ * 300 calls/min rate limit during live typing in search bars.
+ */
+export function createDebouncedSearchOneMap(delayMs = 300) {
+  let timer: NodeJS.Timeout | null = null;
+  return (query: string, page = 1): Promise<AddressSearchResponse> => {
+    return new Promise((resolve) => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(async () => {
+        const res = await searchOneMapAddress(query, page);
+        resolve(res);
+      }, delayMs);
+    });
+  };
 }
 
 export interface RouteEstimateResponse {
@@ -76,7 +93,7 @@ export async function estimateOneMapRoute(
     return response;
   } catch (error) {
     if (__DEV__) {
-      console.warn("[onemap] route unavailable, using Haversine fallback:", (error as Error).message);
+      console.log("[onemap] route unavailable, using Haversine fallback:", (error as Error).message);
     }
     // Haversine straight-line fallback
     const R = 6371;

@@ -1,10 +1,14 @@
 import React from "react";
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE, MapViewProps } from "react-native-maps";
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE, UrlTile, MapViewProps } from "react-native-maps";
 import { config } from "@constants/config";
 
-export { Marker, Polyline, PROVIDER_GOOGLE };
+export { Marker, Polyline, PROVIDER_GOOGLE, UrlTile };
 
-export default function SmartMapView(props: MapViewProps) {
+export interface SmartMapViewProps extends MapViewProps {
+  useOneMapTiles?: boolean;
+}
+
+export default function SmartMapView({ useOneMapTiles, children, ...props }: SmartMapViewProps) {
   const hasKey = !!(
     config.googleMapsApiKey &&
     config.googleMapsApiKey !== "YOUR_ANDROID_GOOGLE_MAPS_API_KEY"
@@ -14,6 +18,16 @@ export default function SmartMapView(props: MapViewProps) {
     <MapView
       {...props}
       provider={hasKey ? props.provider : undefined}
-    />
+    >
+      {useOneMapTiles ? (
+        <UrlTile
+          urlTemplate="https://maps.onemap.gov.sg/maps/maptiles/3857/Default/{z}/{x}/{y}.png"
+          maximumZ={19}
+          tileSize={256}
+        />
+      ) : null}
+      {children}
+    </MapView>
   );
 }
+

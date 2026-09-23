@@ -19,7 +19,11 @@ export function Header({ title, showBack = true, onBack, rightElement }: HeaderP
 
   const handleBack = () => {
     if (onBack) return onBack();
-    if (router.canGoBack()) router.back();
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/(tabs)/profile");
+    }
   };
 
   const paddingTop = Math.max(insets.top + spacing.xs, spacing.lg);

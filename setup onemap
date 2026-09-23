@@ -1,0 +1,75 @@
+# Implementation Plan: OneMap Singapore API 3-Day Token Renewal & Supabase Edge Functions Setup
+
+This plan details the server-side authentication, automatic 3-day token renewal (with a 6-hour buffer), concurrency protection, rate limiting, and Supabase Edge Functions proxy architecture for OneMap Singapore APIs.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Credential Security**:
+> OneMap credentials (`ONEMAP_USERNAME` / `ONEMAP_EMAIL` & `ONEMAP_PASSWORD`) will ONLY reside in Supabase Edge Function secrets and server environment variables. Zero credentials, tokens, or auth headers will ever be exposed to or bundled inside the React Native / Expo app.
+
+> [!NOTE]
+> **Token Renewal Buffer & Concurrency**:
+> * Token Expiration: ~3 days (~72 hours).
+> * Renewal Safety Buffer: **6 hours** prior to expiration.
+> * Concurrency Safety: Single in-flight Promise mutex locks concurrent requests while refreshing tokens, preventing duplicate authentication calls.
+
+## Open Questions
+
+None. The requirements and architecture are fully specified.
+
+---
+
+## Proposed Changes
+
+### Supabase Edge Functions & Shared Services
+
+#### [NEW] [_shared/onemap.ts](file:///e:/supabase/functions/_shared/onemap.ts)
+* Shared server-side Deno TypeScript module for Supabase Edge Functions.
+* Implements:
+  * `getOneMapToken()`: Automatic token caching with 6-hour renewal buffer and in-flight request mutex (`inFlightTokenPromise`).
+  * `searchAddress()`, `geocodeAddress()`, `reverseGeocode()`, `getRoute()`.
+  * Automatic HTTP 401 retry (invalidates cached token, refreshes, retries ONCE).
+  * Rate-limit handling (HTTP 429 with exponential backoff).
+  * Zero-credential logging (strictly sanitizes logs).
+
+#### [NEW] [onemap-search/index.ts](file:///e:/supabase/functions/onemap-search/index.ts)
+* Supabase Edge Function endpoint for Singapore address & 6-digit postal code search.
+
+#### [NEW] [onemap-geocode/index.ts](file:///e:/supabase/functions/onemap-geocode/index.ts)
+* Supabase Edge Function endpoint for forward geocoding Singapore addresses to Lat/Lng.
+
+#### [NEW] [onemap-reverse-geocode/index.ts](file:///e:/supabase/functions/onemap-reverse-geocode/index.ts)
+* Supabase Edge Function endpoint for reverse geocoding Lat/Lng to Singapore addresses.
+
+#### [NEW] [onemap-route/index.ts](file:///e:/supabase/functions/onemap-route/index.ts)
+* Supabase Edge Function endpoint for SLA OneMap driving route polyline calculation.
+
+---
+
+### Node.js Backend Service Synchronization
+
+#### [MODIFY] [onemap.service.js](file:///e:/backend/src/services/onemap.service.js)
+* Upgrade Node.js backend proxy service to mirror the exact same 6-hour renewal buffer, concurrency mutex, HTTP 401 invalidation retry, 429 rate limit backoff, and sanitized logging.
+
+---
+
+### React Native Mobile Application
+
+#### [MODIFY] [services/onemap.ts](file:///e:/josan-driver-native-clean/services/onemap.ts)
+* Client-side proxy service calling Supabase Edge Functions / Backend API endpoints.
+* Add frontend search debouncing (`debounceSearchOneMap`) to reduce unnecessary requests and observe the 300 calls/min rate limit.
+* Ensure no credentials or tokens are stored in AsyncStorage or Expo config.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Run TypeScript type checks: `npm run typecheck` in driver app.
+
+### Manual & Integration Verification
+- Verify `getOneMapToken()` token renewal and 6-hour safety buffer.
+- Test concurrent request handling (simulate 10 parallel route requests on token expiry).
+- Verify 401 token invalidation and single retry flow.
+- Test address search debouncing and route polyline rendering in Expo app.

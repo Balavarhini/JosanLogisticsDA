@@ -11,7 +11,7 @@ export default function VehicleScreen() {
   useEffect(() => {
     getVehicle()
       .then((data) => setVehicle(data))
-      .catch((e) => console.warn(e))
+      .catch((e) => console.log(e))
       .finally(() => setLoading(false));
   }, []);
 

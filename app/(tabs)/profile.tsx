@@ -150,7 +150,7 @@ export default function ProfileScreen() {
               style={styles.menuRow}
               accessibilityRole="button"
               accessibilityLabel={item.label}
-              onPress={() => router.push(item.route as never)}
+              onPress={() => router.navigate(item.route as any)}
             >
               <Ionicons name={item.icon} size={20} color={colors.textPrimary} />
               <Text style={styles.menuLabel}>{item.label}</Text>

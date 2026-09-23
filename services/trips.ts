@@ -15,7 +15,7 @@ async function withDevFallback<T>(request: () => Promise<T>, fallback: () => T):
     return await request();
   } catch (error) {
     if (__DEV__) {
-      console.warn("[trips] API unavailable, using local sample data:", (error as Error).message);
+      console.log("[trips] API unavailable, using local sample data:", (error as Error).message);
       return fallback();
     }
     throw error;
